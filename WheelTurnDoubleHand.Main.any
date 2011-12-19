@@ -1,0 +1,272 @@
+#include "PreMainIncludes.any"
+
+Main = {
+  
+  AnyOperationSequence RunApplication = {
+    AnyOperation &CalibrationAnal = Main.HumanModel.Calibration.CalibrationSequence;  
+    AnyOperation &InvAnal=Main.Study.InverseDynamics;
+  };
+  
+  AnyFolder StrengthParameters={
+    AnyVar SpecificMuscleTensionSpine= 90; //N/cm^2
+    AnyVar StrengthIndexLeg= 1; 
+    AnyVar SpecificMuscleTensionShoulderArm= 90; //N/cm^2
+  };
+  
+  AnyFolder WinchParameters = {
+    AnyVec3 Hub = {0.53, 0.08, 0}; // Center of the wheel
+    AnyVar Rad = 0.25;               // Radius of the wheel
+    
+    // Movement of the wheel
+    AnyVar Omega = 180;             // Wheel angular velocity, degrees/sek
+    AnyVar M = -20;                 // Wheel moment
+  };
+  
+  AnyFolder SupportParameters = {
+    AnyVec3 HandRest = {0.4, 0.100, -0.4};  // Rest for the left hand
+    AnyVar HandRestPitch = 0;
+    AnyVar HandRestRoll = -40;
+    AnyVar HandRestYaw = -20;
+  };
+  
+  
+  AnyFixedRefFrame GlobalRef = {
+    Origin ={0,0,0};
+AnyDrawRefFrame DrwRef = {
+       ScaleXYZ={0.05,0.05,0.05};
+       RGB ={0,0,1};Visible = On;};
+
+    AnyRefNode PelvisGroundLock = {
+      sRel = {0.1,-0.13,0.0};
+    };
+    
+    // AnyBody logo 
+    AnyRefNode Logo={
+      sRel={1.2,-0.1,-0.5};
+      ARel = RotMat(150*pi/180,y)*RotMat(0*pi/180,x);
+      
+      AnyDrawSTL Body = {
+        FileName = "<AMMR_PATH>Body/AAUHuman/ToolBox/DrawObjects/Body-grey.stl";
+        RGB = Main.DrawSettings.Colors.AnyBodyGrey;
+        Opacity = 1;  ScaleXYZ={0.01,0.01,0.01}*1.5;
+      };
+      
+      AnyDrawSTL AnyTechnology = {
+        FileName = "../../../Body/AAUHuman/ToolBox/DrawObjects/AnyTechnology-red.stl";
+        RGB = Main.DrawSettings.Colors.AnyBodyRed;
+        Opacity = 1; ScaleXYZ={0.01,0.01,0.01}*1.5;
+      };
+    };
+  };
+  
+  #include "DrawSettings.any"
+  AnyFolder HumanModel={
+    
+    AnyFolder &Mannequin=.Model.Mannequin;
+    #include  "BodyModel.any"
+    AnyFolder StrengthParameters={
+      AnyVar SpecificMuscleTensionSpine= 90; //N/cm^2
+      AnyVar StrengthIndexLeg= 1; 
+      AnyVar SpecificMuscleTensionShoulderArm= 90; //N/cm^2
+    };
+    
+    //Choice of Scaling
+    #include "<AMMR_PATH>Body\AAUHuman\Scaling\ScalingStandard.any"    
+    Scaling={  };   
+  };
+  
+  AnyFolder Model = {    
+    
+    AnyFolder &HumanModel=.HumanModel.BodyModel;
+    #include "Environment.any"   
+    #include "Mannequin.any"   
+    
+    AnyFolder ModelEnvironmentConnection = {
+      #include "JointsAndDrivers.any"
+    };
+  };
+  
+  AnyBodyStudy Study = {
+    AnyFolder &Model = .Model;
+    
+    tEnd = 360/.WinchParameters.Omega-1/360;  // Always turn one round
+    Gravity = {0.0, -9.81, 0.0};
+    nStep=20;
+    
+    AnyOutputFun maxMuscle=  {  Val = Main.Study.MaxMuscleActivity; };
+    AnyOutputFun ThoraxExtension = { Val = Main.Model.HumanModel.Interface.Trunk.PelvisThoraxExtension.Pos;
+    };    
+  }; // End of study 
+  
+  
+//  AnyOptKinStudy LoadSaveDesignVar = 
+//  {
+//    //LogFile = "";
+//    Analysis = 
+//    {
+//      Settings = 
+//      {
+//        Echo = On;
+//        ModelSceneUpdate = On;
+//      };
+//      AnyOperation &InvStd = Main.Study.Kinematics;
+//    };
+//    //MaxIterationStep = 100;
+//    //AnyDesVar & ElboePron = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data;
+//    //AnyDesVar &<Insert name1> = <Insert object reference (or full object definition)>; You can make any number of these objects!
+//    
+//    AnyVar slack=180*pi/180;
+//    AnyVar slack2=10*pi/180;
+//    AnyVar slack3=5*pi/180;
+//    
+//    //#include "HandlePosDesignVars.any"
+//    #include "ThoraxFlexDesignVars.any"
+//    #include "ThoraxLateralBendingDesignVars.any"
+//    
+//  };
+  
+  AnyOptStudy Optimization = 
+  {
+    //LogFile = "";
+    Analysis = 
+    {
+      Settings = 
+      {
+        Echo = On;
+        ModelSceneUpdate = On;
+      };
+      AnyOperation &InvStd = Main.Study.InverseDynamics;
+    };
+    //MaxIterationStep = 100;
+    //AnyDesVar & ElboePron = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data;
+    //AnyDesVar &<Insert name1> = <Insert object reference (or full object definition)>; You can make any number of these objects!
+    
+    AnyVar slack=180*pi/180;
+    AnyVar slack2=10*pi/180;
+    AnyVar slack3=5*pi/180;
+    
+    #include "HandlePosDesignVars.any"
+    //#include "ThoraxFlexDesignVars.any"
+    #include "ThoraxLateralBendingDesignVars.any"
+    
+    AnyDesVar ElbowPron1 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data[0][1];
+      Min = 0 -(.slack);
+      Max = 0 +(.slack);
+    };
+    AnyDesVar ElbowPron2 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data[0][2];
+      Min = 0 -.slack;
+      Max = 0 +(.slack);
+    };
+    AnyDesVar ElbowPron3 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data[0][3];
+      Min = 0 -.slack;
+      Max = 0 +(.slack);
+    };
+    AnyDesVar ElbowPron4 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data[0][4];
+      Min = 0 -.slack;
+      Max = 0 +(.slack);
+    };
+    AnyDesVar ElbowPron5 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data[0][5];
+      Min = 0 -.slack;
+      Max = 0 +(.slack);
+    };
+    AnyDesVar ElbowPron6 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data[0][6];
+      Min = 0 -.slack;
+      Max = 0 +(.slack);
+    };
+    AnyDesVar ElbowPron7 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.Elbow.Data[0][7];
+      Min = 0 -.slack;
+      Max = 0 +(.slack);
+      
+    };
+    //    
+    //      AnyDesVar Posture1 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalLateralSpline.Data[0][0];
+    //      Min = Val ;
+    //      Max = Val +(.slack2);
+    //    };
+    //AnyDesVar posture2 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalLateralSpline.Data[0][1];
+    //      Min = Val -.slack2;
+    //      Max = Val +(.slack2);
+    //    };
+    //AnyDesVar posture3 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalLateralSpline.Data[0][2];
+    //      Min = Val -.slack2;
+    //      Max = Val +(.slack2);
+    //    };
+    //AnyDesVar posture4 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalLateralSpline.Data[0][3];
+    //      Min = Val -.slack2;
+    //      Max = Val +(.slack2);
+    //    };
+    //AnyDesVar posture5 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalLateralSpline.Data[0][4];
+    //      Min = Val ;
+    //      Max = Val +(.slack2);
+    //    };
+    
+    // AnyDesVar Posture6 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalExtFlexSpline.Data[0][0];
+    //      Min = Val -(.slack3);
+    //      Max = Val ;
+    //    };
+    //AnyDesVar posture7 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalExtFlexSpline.Data[0][1];
+    //      Min = Val -.slack3;
+    //      Max = Val +(.slack3);
+    //    };
+    //AnyDesVar posture8 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalExtFlexSpline.Data[0][2];
+    //      Min = Val -.slack2;
+    //      Max = Val +(.slack2);
+    //    };
+    //AnyDesVar posture9 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalExtFlexSpline.Data[0][3];
+    //      Min = Val -.slack3;
+    //      Max = Val +(.slack3);
+    //    };
+    //AnyDesVar posture10 = 
+    //    {
+    //      Val = Main.Model.ModelEnvironmentConnection.Drivers.posturalExtFlexSpline.Data[0][4];
+    //      Min = Val -(.slack3);
+    //      Max = Val ;
+    //    };
+    
+    
+    
+    
+    
+    AnyDesMeasure maxMuscle = {
+      Val = mean(Main.Study.maxMuscle()^2) + 100*max(Main.Study.KinematicError);
+      Type = ObjectiveFun;
+    };
+    //AnyDesMeasure &<Insert name1> = <Insert object reference (or full object definition)>; You can make any number of these objects!
+  };
+  //
+  
+}; //Main
+
+

@@ -1,0 +1,444 @@
+/* 
+   This file contains the drivers for the human model, and joints between the 
+   environment and the human
+*/
+
+AnyFolder Drivers = {
+  
+  AnyFolder &JntPos=..Mannequin.Posture;
+  AnyFolder &JntVel=..Mannequin.PostureVel;
+  
+  
+  AnyFolder &Thorax = ..HumanModel.Trunk.SegmentsThorax.ThoraxSeg;
+  
+  
+  // ************************************
+  // Drivers for attaching the pelvis to the global reference system
+  // ************************************  
+  
+  AnyKinEqSimpleDriver PelvisGroundDriver ={
+    MeasureOrganizer = {0,1,2,3,4,5};
+    AnyKinLinear lin ={
+      AnyFixedRefFrame &ref1 =....EnvironmentModel.GlobalRef;
+      AnySeg &ref2 =....HumanModel.Trunk.SegmentsLumbar.PelvisSeg;
+    };
+    AnyKinRotational rot ={
+      AnyFixedRefFrame &ref1 =....EnvironmentModel.GlobalRef;
+      AnySeg &ref2 =....HumanModel.Trunk.SegmentsLumbar.PelvisSeg;
+      Type=RotAxesAngles;
+    };
+    DriverPos={
+      .JntPos.PelvisPosX,
+      .JntPos.PelvisPosY,
+      .JntPos.PelvisPosZ,
+      pi/180*.JntPos.PelvisRotZ,
+      pi/180*.JntPos.PelvisRotY,
+      pi/180*.JntPos.PelvisRotX
+    };
+    DriverVel={
+      .JntVel.PelvisPosX,
+      .JntVel.PelvisPosY,
+      .JntVel.PelvisPosZ,
+      pi/180*.JntVel.PelvisRotZ,
+      pi/180*.JntVel.PelvisRotY,
+      pi/180*.JntVel.PelvisRotX
+    };
+    Reaction.Type={On,On,On,On,On,On};
+  };
+  
+    
+//  AnyKinEqFourierDriver PelvisXZRotDriver = 
+//  {
+//    MeasureOrganizer = {0,2};
+//    CType =  {Hard,Hard};
+//    //WeightFun = {};
+//    Type = 1;
+//    Freq = Main.WheelParameters.Omega/360;
+//    A = {{0,0.05},{0,-0.05}};
+//    B = {{0,pi},{0,pi}};
+//    
+//    AnyKinRotational rot ={
+//      AnyFixedRefFrame &ref1 =....EnvironmentModel.GlobalRef;
+//      AnySeg &ref2 =....HumanModel.Trunk.SegmentsLumbar.PelvisSeg;
+//      Type=RotAxesAngles;
+//    };
+//    Reaction.Type = {On,On};  
+//  };
+  
+  
+  
+  AnyFolder &RefHM = Main.Model.HumanModel;
+  
+  
+  AnyFolder &ref=Main.Model.HumanModel.Trunk;
+  
+  
+  // Hand Drivers
+  
+    #include "RightHandDrivers.any"
+    #include "LeftHandDrivers.any"
+
+  
+  
+  
+  // ************************************
+  // Drivers for the spine
+  // ************************************
+  
+  //Neck driver 
+//  AnyKinEqSimpleDriver NeckJntDriver = {
+//    AnyJoint &T12L1Joint = ...HumanModel.Interface.Trunk.NeckJoint;
+//    DriverPos = pi/180*{.JntPos.NeckExtension,0,0};
+//    DriverVel = pi/180*{.JntVel.NeckExtension,0,0};
+//    Reaction.Type = {Off,Off,Off};
+//  };
+  AnyKinEqSimpleDriver NeckJntDriver = {
+    AnyJoint &T12L1Joint = ...HumanModel.Interface.Trunk.NeckJoint;
+    DriverPos = pi/180*{.JntPos.NeckExtension};
+    DriverVel = pi/180*{.JntVel.NeckExtension};
+    Reaction.Type = {Off};
+  };  
+  
+  //Thorax pelvis rotation driver
+  AnyKinEqSimpleDriver PostureDriver ={
+    AnyKinMeasureOrg &Ref3 = ...HumanModel.Interface.Trunk.PelvisThoraxRotation;   
+    
+    DriverPos = pi/180*{
+//      .JntPos.PelvisThoraxLateralBending,
+      .JntPos.PelvisThoraxRotation
+      //.JntPos.PelvisThoraxExtension
+    };
+    DriverVel = pi/180*{
+//      .JntVel.PelvisThoraxLateralBending,
+      .JntVel.PelvisThoraxRotation
+      //.JntVel.PelvisThoraxExtension
+    };
+    Reaction.Type = {Off};  
+  };  
+  
+  
+//  AnyKinEqFourierDriver PostureDriverLateralBending = 
+//  {
+//    //MeasureOrganizer = {};
+//    CType = Hard;
+//    //WeightFun = {};
+//    Type = 2;
+//    Freq = Main.WheelParameters.Omega/360;
+//    A = {{0,0.25}};
+//    B = {{0,pi+0.3}};
+//    AnyKinMeasureOrg &Ref2 = ...HumanModel.Interface.Trunk.PelvisThoraxLateralBending;        
+//   Reaction.Type = {Off};  
+//
+////  };
+//  AnyKinEqInterPolDriver posturalLateralSpline = 
+//  {
+//    //MeasureOrganizer = {};
+//    //CType = ;
+//    //WeightFun = {};
+//    Type =Bspline;
+//    BsplineOrder = 4;
+//    T = (360/Main.WheelParameters.Omega)*{0/360,90/360,180/360, 270/360, 360/360};
+//    Data= {{0.03721267, -0.308496, 0.26973, 0.2539363, 0.03721267}};
+//
+////    Data=  {{0.03719904, -0.2404201, 0.3155832, 0.3405723, 0.01152855}};
+//    //    Data = {{0, -0.3566374, 0.1411123, 0.2494234, 0.01110955}};
+////    opt2 -0.02623265
+////    Data = {{0, -15*pi/180, 0, 15*pi/180, 0}};
+//    //FileName = "";
+//    //FileErrorContinueOnOff = Off;
+//    AnyKinMeasureOrg &Ref2 =...HumanModel.Interface.Trunk.PelvisThoraxLateralBending;
+//    Reaction.Type = {Off};  
+//  };
+
+  AnyKinEqFourierDriver PostureDriverThoraxLateralBending = 
+  {
+    //MeasureOrganizer = {};
+    CType = Hard;
+    //WeightFun = {};
+    Type = CosSin;
+    Freq = Main.WinchParameters.Omega/360;
+    A = {{0,0,0}};
+    B = {{0,-0.2,0}};
+    AnyKinMeasureOrg &Ref1 =...HumanModel.Interface.Trunk.PelvisThoraxLateralBending;
+    Reaction.Type = {Off};  
+  };  
+  
+  
+//  AnyKinEqInterPolDriver posturalExtFlexSpline = 
+//  {
+//    //MeasureOrganizer = {};
+//    //CType = ;
+//    //WeightFun = {};
+//    Type =Bspline;
+//    BsplineOrder = 4;
+//    T = (360/Main.WheelParameters.Omega)*{0/360,90/360,180/360, 270/360, 360/360};
+//    //Data={{-0.6231098, -0.2801242, -0.03619558, -0.3886652, -0.6485702}};
+//    Data={{-0.4801242, -0.4801242, -0.4801242, -0.4801242, -0.4801242}};
+//
+////    Data= {{-0.5431447, -0.3189552, -0.001832769, -0.3161134, -0.5613037}};
+////    Data = {{-30*pi/180, -15*pi/180, 0*pi/180, -15*pi/180,-30*pi/180}};
+////    opt2 -0.02623265
+////    Data = {{0, -15*pi/180, 0, 15*pi/180, 0}};
+//    //FileName = "";
+//    //FileErrorContinueOnOff = Off;
+//    AnyKinMeasureOrg &Ref2 =...HumanModel.Interface.Trunk.PelvisThoraxExtension;
+//    Reaction.Type = {Off};  
+//  };
+  
+
+
+  AnyKinEqFourierDriver PostureDriverThoraxExtension = 
+  {
+    //MeasureOrganizer = {};
+    CType = Hard;
+    //WeightFun = {};
+    Type = CosSin;
+    Freq = Main.WinchParameters.Omega/360;
+    A = {{-0.4801242,-0.2,0}};
+    B = {{0,0,0}};
+    AnyKinMeasure &Ref1 = ...HumanModel.Interface.Trunk.PelvisThoraxExtension;
+    Reaction.Type = {Off};  
+  };
+
+  
+  
+  // ************************************
+  // Drivers for the right arm
+  // ************************************
+  
+  
+  //Sterno clavicular joint driver
+  AnyKinEqSimpleDriver SCDriverRight ={
+    AnyKinMeasureOrg &ref1 =...HumanModel.Interface.Right.SternoClavicularProtraction;
+    AnyKinMeasureOrg &ref2 =...HumanModel.Interface.Right.SternoClavicularElevation;
+    AnyKinMeasureOrg &ref3 =...HumanModel.Interface.Right.SternoClavicularAxialRotation;
+    DriverPos = pi/180*{
+      .JntPos.Right.SternoClavicularProtraction,
+      .JntPos.Right.SternoClavicularElevation,
+      .JntPos.Right.SternoClavicularAxialRotation
+    };
+    DriverVel = {
+      .JntVel.Right.SternoClavicularProtraction,
+      .JntVel.Right.SternoClavicularElevation,
+      .JntVel.Right.SternoClavicularAxialRotation
+    };
+    Reaction.Type={Off,Off,Off};
+  };
+  
+  //Wrist driver 
+  AnyKinEqSimpleDriver WristDriverRight ={
+    AnyKinMeasureOrg &ref1 =...HumanModel.Interface.Right.WristFlexion;
+    //AnyKinMeasureOrg &ref2 =...HumanModel.Interface.Right.WristAbduction;
+    DriverPos = pi/180*{
+      .JntPos.Right.WristFlexion
+      // .JntPos.Right.WristAbduction
+    };
+    
+    DriverVel = pi/180*{
+      .JntVel.Right.WristFlexion};
+    //.JntVel.Right.WristAbduction};
+    Reaction.Type={Off};
+  };
+  
+//  //Elbow pronation driver 
+//  AnyKinEqSimpleDriver ElbowPSDriverRight={
+//    AnyKinMeasureOrg &Elbow =...HumanModel.Interface.Right.ElbowPronation;
+//    DriverPos= pi/180*{.JntPos.Right.ElbowPronation };  
+//    DriverVel = pi/180*{.JntVel.Right.ElbowPronation };  
+//    Reaction.Type={Off};
+//  };
+  //AnyVector Ta = iarr(12,12,360);
+//  
+  AnyKinEqInterPolDriver Elbow = 
+  {
+    //MeasureOrganizer = {};
+    //CType = ;
+    //WeightFun = {};
+    Type =Bspline;
+    BsplineOrder = 4;
+    T = (360/Main.WinchParameters.Omega)*{0/360,100/360,140/360, 160/360, 180/360, 200/360, 220/360, 360/360 };
+    Data={{-0.5235988, -0.1545362, 0.1197311, 0.1139721, -0.02618572, -0.1410608, -0.2252185, -0.5987893}};
+//    Data=  {{-0.5235988, -0.2530007, 0.1240638, 0.1572748, 0.01304429, -0.091999, -0.2018952, -0.5643959}};
+//    Data = {{-0.5235988, -0.2907301, 0.03691536, 0.2719966, 0.146837, -0.1457645, -0.1641803, -0.526681}};
+//  Opt1   Data = {{-0.5235988, -0.4315319, -0.137545, 0.1744783, 0.003306629, -0.1745329, -0.1745329, -0.5235988}};
+    //FileName = "";
+    //FileErrorContinueOnOff = Off;
+    AnyKinMeasureOrg &Elbow =...HumanModel.Interface.Right.ElbowPronation;
+    Reaction.Type={Off};
+  };
+
+  AnyKinEqInterPolDriver ElbowLeft = 
+  {
+    //MeasureOrganizer = {};
+    //CType = ;
+    //WeightFun = {};
+    Type =Bspline;
+    BsplineOrder = 4;
+    T = (360/Main.WinchParameters.Omega)*{0/360,100/360,140/360, 160/360, 180/360, 200/360, 220/360, 360/360 };
+    Data={{-0.5235988, -0.1545362, 0.1197311, 0.1139721, -0.02618572, -0.1410608, -0.2252185, -0.5987893}};
+//    Data=  {{-0.5235988, -0.2530007, 0.1240638, 0.1572748, 0.01304429, -0.091999, -0.2018952, -0.5643959}};
+//    Data = {{-0.5235988, -0.2907301, 0.03691536, 0.2719966, 0.146837, -0.1457645, -0.1641803, -0.526681}};
+//  Opt1   Data = {{-0.5235988, -0.4315319, -0.137545, 0.1744783, 0.003306629, -0.1745329, -0.1745329, -0.5235988}};
+    //FileName = "";
+    //FileErrorContinueOnOff = Off;
+    AnyKinMeasureOrg &Elbow =...HumanModel.Interface.Left.ElbowPronation;
+    Reaction.Type={Off};
+  };
+  
+  
+
+  
+  //Glenohumeral joint driver
+  //  AnyKinEqSimpleDriver GHDriverRight={
+  //     AnyKinMeasureOrg &ref1 =...HumanModel.Interface.Right.GlenohumeralAbduction;
+  //    // AnyKinMeasureOrg &ref2 =...HumanModel.Interface.Right.GlenohumeralFlexion;
+//    //AnyKinMeasureOrg &ref3 =...HumanModel.Interface.Right.GlenohumeralExternalRotation;
+//    DriverPos=pi/180*{
+//       .JntPos.Right.GlenohumeralAbduction  //GH joint
+//      // .JntPos.Right.GlenohumeralFlexion,  //GH joint
+//      //   .JntPos.Right.GlenohumeralExternalRotation  //GH joint
+//    };    
+//    DriverVel = pi/180*{
+//      .JntVel.Right.GlenohumeralAbduction  //GH joint
+//      //.JntVel.Right.GlenohumeralFlexion,  //GH joint
+//      //  .JntVel.Right.GlenohumeralExternalRotation  //GH joint
+//    };    
+//    Reaction.Type={
+//      //Off,Off
+//      Off};
+//  };
+//  
+  
+  
+  // ************************************
+  // Drivers for the left arm
+  // ************************************
+  
+  
+  //Sterno clavicular joint driver
+  AnyKinEqSimpleDriver SCDriverLeft ={
+    AnyKinMeasureOrg &ref1 =...HumanModel.Interface.Left.SternoClavicularProtraction;
+    AnyKinMeasureOrg &ref2 =...HumanModel.Interface.Left.SternoClavicularElevation;
+    AnyKinMeasureOrg &ref3 =...HumanModel.Interface.Left.SternoClavicularAxialRotation;
+    
+    DriverPos = pi/180*{
+      .JntPos.Left.SternoClavicularProtraction,
+      .JntPos.Left.SternoClavicularElevation,
+      .JntPos.Left.SternoClavicularAxialRotation
+    };
+    
+    DriverVel = pi/180*{
+      .JntVel.Left.SternoClavicularProtraction,
+      .JntVel.Left.SternoClavicularElevation,
+      .JntVel.Left.SternoClavicularAxialRotation
+    };
+    
+    Reaction.Type={Off,Off,Off};
+  };
+  
+//Wrist driver 
+  AnyKinEqSimpleDriver WristDriverLeft={
+    AnyKinMeasureOrg &ref1 =...HumanModel.Interface.Left.WristFlexion;
+    //AnyKinMeasureOrg &ref2 =...HumanModel.Interface.Right.WristAbduction;
+    DriverPos = pi/180*{
+      .JntPos.Left.WristFlexion
+      // .JntPos.Right.WristAbduction
+    };
+    
+    DriverVel = pi/180*{
+      .JntVel.Left.WristFlexion};
+    //.JntVel.Right.WristAbduction};
+    Reaction.Type={Off};
+  };  
+  
+  
+  
+//  
+//  //Elbow pronation driver 
+//  AnyKinEqSimpleDriver ElbowPSDriverLeft={
+//    AnyKinMeasureOrg &Elbow =...HumanModel.Interface.Left.ElbowPronation;
+//    DriverPos= pi/180*{.JntPos.Left.ElbowPronation };  
+//    DriverVel = pi/180*{.JntVel.Left.ElbowPronation };  
+//    Reaction.Type={Off};
+//  };
+  //Glenohumeral joint driver
+//  AnyKinEqSimpleDriver GHDriverLeft={
+//    // AnyKinMeasureOrg &ref1 =...HumanModel.Interface.Left.GlenohumeralAbduction;
+//    // AnyKinMeasureOrg &ref2 =...HumanModel.Interface.Left.GlenohumeralFlexion;
+//    AnyKinMeasureOrg &ref3 =...HumanModel.Interface.Left.GlenohumeralExternalRotation;
+//    DriverPos=pi/180*{
+//      // .JntPos.Left.GlenohumeralAbduction,  //GH joint
+//      // .JntPos.Left.GlenohumeralFlexion,  //GH joint
+//      .JntPos.Left.GlenohumeralExternalRotation  //GH joint
+//    };    
+//    DriverVel = pi/180*{
+//      //  .JntVel.Left.GlenohumeralAbduction,  //GH joint
+//      //  .JntVel.Left.GlenohumeralFlexion,  //GH joint
+//      .JntVel.Left.GlenohumeralExternalRotation  //GH joint
+//    };    
+//    Reaction.Type={
+//      //Off,Off
+//      Off};
+//  };
+//  
+  
+}; //Drivers
+
+// Joints between the human model and the environment
+
+// Right hand joint definition
+AnyFolder Joints = {
+  
+  AnyRevoluteJoint HandleHandJoint = 
+  {
+    Axis = y;
+    Ref = 1;
+    
+    Main.Model.HumanModel.Right.ShoulderArm.Seg.Hand.HandRef = {
+      AnyRefNode HandleContact = {
+        sRel = {0.02,-0.060,-0.005};
+        ARel = RotMat(pi/2,x);
+        AnyDrawRefFrame DrwRef = {
+       ScaleXYZ={0.05,0.05,0.05};
+       RGB ={0,1,0};Visible = On;
+     };
+               
+      };
+    };
+    
+    AnyRefFrame &Palm = Main.Model.HumanModel.Right.ShoulderArm.Seg.Hand.HandRef.HandleContact;
+    AnyRefFrame &Rim = Main.Model.EnvironmentModel.WhinchHandle.Handle;
+  };
+  
+ // Left hand joint definition
+ 
+  AnyRevoluteJoint HandleHandJointLeft = 
+  {
+    Axis = y;
+    Ref = 1;
+    
+    Main.Model.HumanModel.Left.ShoulderArm.Seg.Hand.HandRef = {
+      AnyRefNode HandleContact = {
+        sRel = {0.02,-0.060,-0.005};
+        ARel = RotMat(-pi/2,x);
+        AnyDrawRefFrame DrwRef = {
+       ScaleXYZ={0.05,0.05,0.05};
+       RGB ={0,1,0};Visible = On;
+     };
+
+      };
+    };
+    
+    AnyRefFrame &Palm = Main.Model.HumanModel.Left.ShoulderArm.Seg.Hand.HandRef.HandleContact ;
+    AnyRefFrame &Rim = Main.Model.EnvironmentModel.WhinchHandle.Handle2;
+  };  
+//  AnySphericalJoint HandHandle = {
+//    AnySeg &Palm = Main.Model.HumanModel.Right.ShoulderArm.Seg.Glove;
+//    AnyRefNode &Rim = Main.Model.EnvironmentModel.Wheel.Handle;
+//  };
+//  
+//  AnyStdJoint HandRest = {
+//    AnySeg &Palm = Main.Model.HumanModel.Left.ShoulderArm.Seg.Hand.HandRef;
+//    AnyRefNode &Ground = Main.Model.EnvironmentModel.GlobalRef.HandRest;     
+//  };  
+};

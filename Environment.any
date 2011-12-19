@@ -1,0 +1,189 @@
+
+AnyFolder EnvironmentModel = {
+  
+  /*
+  This folder contains the definition of the Environment.
+  I.e. whinch and its corresponding drivers and joints.
+
+  */  
+  
+  AnyFixedRefFrame GlobalRef = {
+
+     AnyDrawRefFrame DrwRef = {
+       ScaleXYZ={0.1,0.1,0.1};
+       RGB ={0,1,0};Visible = On;
+     };
+               
+    
+    // The hub of the Whinch
+    AnyRefNode Hub = {
+      sRel = Main.WinchParameters.Hub;
+      AnyDrawRefFrame  Drw={ScaleXYZ={0.05,0.05,0.05};};
+      AnyRefNode WinchNode = {
+        ARel =RotMat(-pi/2,x);
+        AnyDrawSurf HarkenWinchTop = 
+        {
+          RGB = {0.8, 0.8, 0.8};
+          Face =-1;
+          FileName = "Harken Winch Top.stl";
+        };
+      };    
+    };
+    
+    // The left hand rest
+     AnyRefNode HandRest = {
+      sRel = Main.SupportParameters.HandRest;
+//          AnyDrawRefFrame drw = {ScaleXYZ={0.1,0.1,0.1};};
+
+      AnyFolder &HandRef = Main.Model.HumanModel.Left.ShoulderArm.Seg.Hand.HandRef;
+      ARel = RotMat(Main.SupportParameters.HandRestPitch*pi/180,z)
+      *RotMat(Main.SupportParameters.HandRestRoll*pi/180,x)
+      *RotMat(Main.SupportParameters.HandRestYaw*pi/180,y)*HandRef.Axes0;
+    };
+        
+//    AnyDrawRefFrame drw = {};
+  };//GlobalRef
+  
+  AnySeg WhinchHandle = {
+    Mass = 2.5;
+    Jii = {0.1,2,0.1}*0.1;
+    r0 =Main.WinchParameters.Hub;
+    
+    AnyRefNode Top={sRel={0.0,0.03,0};};
+    AnyRefNode Bottom={sRel={0.0,-0.03,0};};
+    AnyRefNode Handle = {
+      sRel = {Main.WinchParameters.Rad, 0.05, 0};
+      AnyDrawRefFrame DrwRef = {
+       ScaleXYZ={0.05,0.05,0.05};
+       RGB ={1,0,0};Visible = On;
+     };
+
+    };
+    AnyRefNode Handle2 = {
+      sRel = {Main.WinchParameters.Rad, 0.05+0.09, 0};
+      AnyDrawRefFrame DrwRef = {
+       ScaleXYZ={0.05,0.05,0.05};
+       RGB ={1,0,0};Visible = On;
+     };
+    };
+    
+    AnyRefNode HandleTip={
+      sRel=.Handle.sRel+{0,0.05,0};
+    };
+    AnyRefNode HandleBottom={
+      sRel=.Handle.sRel+{0,-0.05,0};
+    };
+    AnyRefNode HandleNode = {
+      ARel =RotMat(-pi/2,x);
+      AnyDrawSurf HandleRod = 
+      {
+        RGB = {0.7, 0.6, 0.6};
+        Face = -1;
+        FileName = "winchHandleMetal.stl";
+      };
+      AnyDrawSurf Handle = 
+      {
+        RGB = {0.1, 0.1, 0.1};
+        Face = -1;
+        FileName = "winchHandleBlack.stl";
+      };
+    }; 
+    AnyRefNode HandleNode2 = {
+      ARel =RotMat(-pi/2,x);
+      sRel = {0,0.09,0};
+      AnyDrawSurf Handle = 
+      {
+        RGB = {0.1, 0.1, 0.1};
+        Face = -1;
+        FileName = "winchHandleBlack.stl";
+      };
+    };    
+  };
+  
+  // Join the wheels to the chair (ground, actually)
+  AnyRevoluteJoint WhinchHandleJoint = {
+    AnyRefNode &Ground = .GlobalRef.Hub;
+    AnySeg &WhinchHandle = .WhinchHandle ;
+    Axis = y;
+  };
+
+//  // Drive the wheels. This in turn dbetermines the hand movement
+//  AnyKinEqSimpleDriver HandleDriver = {
+//    AnyRevoluteJoint &Joint = .WhinchHandleJoint ;
+//    DriverPos = {0};
+//    DriverVel = {Main.WheelParameters.Omega*pi/180};
+//    Reaction.Type = {Off}; // Let applied moment through
+//  };
+  
+  AnyKinEqInterPolDriver HandleDriver = 
+  {
+    Type =Bspline;
+    BsplineOrder = 4;
+    T = (360/Main.WinchParameters.Omega)*{0/360,90/360, 135/360, 180/360, 202/360, 225/360, 247/360, 270/360, 360/360};
+    Data= {{0.0     ,  1.57079633,  2.35619449,  3.14159265,3.534291735,
+        3.92699082, 4.319689900,  4.71238898,  6.28318531}};
+//        Data= {{0.0     ,  1.57079633,  2.35619449,  2.35619449,2.35619449,
+//        3.22699082, 4.319689900,  4.71238898,  6.28318531}};
+
+    AnyRevoluteJoint &Joint = .WhinchHandleJoint ;
+    Reaction.Type = {Off};  
+  };
+  
+  
+  
+  
+
+  // Moment affecting the wheels and caried by the muscles
+  AnyForce Moment = {
+    AnyVar WhinchSpeedRatio = abs(Main.Model.EnvironmentModel.WhinchHandleJoint.Vel[0])/(Main.WinchParameters.Omega*pi/180);    
+    AnyVar Moment = Main.WinchParameters.M - 0.05*Main.WinchParameters.M*(1-WhinchSpeedRatio );
+    
+    AnyRevoluteJoint &Joint = .WhinchHandleJoint;
+    F = { iffun(ltfun(0.04, WhinchSpeedRatio), Moment, 0.00) };
+  };
+  
+  
+  // The following is only for visualization of the 
+  // winch drum which has a gear ration to the winch handle
+  AnySeg Whinch = {
+    Mass = 2.5;
+    Jii = {0.1,2,0.1}*0.1;
+    r0 =Main.WinchParameters.Hub;
+    AnyRefNode winchdrum = {
+      ARel =RotMat(-pi/2,x);
+      AnyDrawSurf HarkenWinchButtom = 
+      {
+        RGB = {0.2, 0.2, 0.2};
+        Face = -1;
+        FileName = "Harken Winch Buttom.stl";
+      };
+              AnyDrawSurf HarkenWinchRing = 
+              {
+                RGB = {1, 0, 0};
+                Face = -1;
+                FileName = "RedRing";
+              };
+      //      };          
+    }; 
+  };
+  // Join the wheels to the chair (ground, actually)
+  AnyRevoluteJoint WhinchJoint = {
+    AnyRefNode &Ground = .GlobalRef.Hub;
+    AnySeg &Whinch = .Whinch ;
+    Axis = y;
+  };
+  AnyKinMeasureLinComb WhinchGear = 
+  {
+    Coef = {{1, 2}};
+    AnyKinMeasureOrg rot = {
+      AnyRevoluteJoint &ref0 = ..WhinchHandleJoint;
+      AnyRevoluteJoint &ref1 = ..WhinchJoint;
+    };
+  };
+  
+  AnyKinEq WhinchDriver = {
+    AnyKinMeasure &ref = .WhinchGear ;
+    Reaction.Type = {On}; 
+  };  
+  
+};

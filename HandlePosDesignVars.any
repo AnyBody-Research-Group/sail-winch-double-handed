@@ -1,0 +1,47 @@
+
+// Design Variables for the Whinch Handle position
+// Each design var has the previous and next as limits
+// This is done to create a monotonically increasing function
+//
+AnyDesVar WhinchTurnPos1 = 
+{
+  Val = Main.Model.EnvironmentModel.HandleDriver.Data[0][1];
+  Min = 0;
+  Max = .WhinchTurnPos2.Val;
+};
+AnyDesVar WhinchTurnPos2 = 
+{
+  Val = Main.Model.EnvironmentModel.HandleDriver.Data[0][2];
+  Min = .WhinchTurnPos1.Val ;
+  Max = .WhinchTurnPos3.Val ;
+};
+AnyDesVar WhinchTurnPos3 = 
+{
+  Val = Main.Model.EnvironmentModel.HandleDriver.Data[0][3];
+  Min = .WhinchTurnPos2.Val ;
+  Max = .WhinchTurnPos4.Val ;
+};
+AnyDesVar WhinchTurnPos4 = 
+{
+  Val = Main.Model.EnvironmentModel.HandleDriver.Data[0][4];
+  Min = .WhinchTurnPos3.Val ;
+  Max = .WhinchTurnPos5.Val ;
+};
+AnyDesVar WhinchTurnPos5 = 
+{
+  Val = Main.Model.EnvironmentModel.HandleDriver.Data[0][5];
+  Min = .WhinchTurnPos4.Val ;
+  Max = .WhinchTurnPos6.Val ;
+};
+AnyDesVar WhinchTurnPos6 = 
+{
+  Val = Main.Model.EnvironmentModel.HandleDriver.Data[0][6];
+  Min = .WhinchTurnPos5.Val ;
+  Max = .WhinchTurnPos7.Val ;
+};
+AnyDesVar WhinchTurnPos7 = 
+{
+  Val = Main.Model.EnvironmentModel.HandleDriver.Data[0][7];
+  Min = .WhinchTurnPos6.Val ;
+  Max = 2*pi;
+};

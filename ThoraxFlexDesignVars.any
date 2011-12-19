@@ -1,0 +1,46 @@
+AnyVar ThoraxFlexSlack = pi/2;
+
+AnyDesMeasure ThoraxExtensionConstraint = {
+  //Val = 0.8 + min(Main.Model.HumanModel.Interface.Trunk.PelvisThoraxExtension.Pos);
+  Val = 0.6 + min(Main.Study.ThoraxExtension()[0]);
+  Type = GreaterThanZero;
+};
+
+
+AnyDesVar ThoraxFlexA0 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxExtension.A[0][0];
+  Min = -.ThoraxFlexSlack;
+  Max =  .ThoraxFlexSlack;
+};
+AnyDesVar ThoraxFlexA1 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxExtension.A[0][1];
+  Min = -.ThoraxFlexSlack;
+  Max =  .ThoraxFlexSlack;
+};
+AnyDesVar ThoraxFlexA2 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxExtension.A[0][2];
+  Min = -.ThoraxFlexSlack;
+  Max =  .ThoraxFlexSlack;
+};
+
+AnyDesVar ThoraxFlexB0 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxExtension.B[0][0];
+  Min = -.ThoraxFlexSlack;
+  Max =  .ThoraxFlexSlack;
+};
+AnyDesVar ThoraxFlexB1 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxExtension.B[0][1];
+  Min = -.ThoraxFlexSlack;
+  Max =  .ThoraxFlexSlack;
+};
+AnyDesVar ThoraxFlexB2 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxExtension.B[0][2];
+  Min = -.ThoraxFlexSlack;
+  Max =  .ThoraxFlexSlack;
+};

@@ -1,0 +1,40 @@
+AnyVar ThoraxLateralBendingSlack = pi/2;
+
+
+AnyDesVar ThoraxLateralBendingA0 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxLateralBending.A[0][0];
+  Min = -.ThoraxLateralBendingSlack;
+  Max =  .ThoraxLateralBendingSlack;
+};
+AnyDesVar ThoraxLateralBendingA1 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxLateralBending .A[0][1];
+  Min = -.ThoraxLateralBendingSlack;
+  Max =  .ThoraxLateralBendingSlack;
+};
+AnyDesVar ThoraxLateralBendingA2 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxLateralBending.A[0][2];
+  Min = -.ThoraxLateralBendingSlack;
+  Max =  .ThoraxLateralBendingSlack;
+};
+
+AnyDesVar ThoraxLateralBendingB0 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxLateralBending.B[0][0];
+  Min = -.ThoraxLateralBendingSlack;
+  Max =  .ThoraxLateralBendingSlack;
+};
+AnyDesVar ThoraxLateralBendingB1= 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxLateralBending.B[0][1];
+  Min = -.ThoraxLateralBendingSlack;
+  Max =  .ThoraxLateralBendingSlack;
+};
+AnyDesVar ThoraxLateralBendingB2 = 
+{
+  Val = Main.Model.ModelEnvironmentConnection.Drivers.PostureDriverThoraxLateralBending.B[0][2];
+  Min = -.ThoraxLateralBendingSlack;
+  Max =  .ThoraxLateralBendingSlack;
+};
