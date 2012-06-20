@@ -1,7 +1,4 @@
-/* 
-   This file contains the drivers for the human model, and joints between the 
-   environment and the human
-*/
+
 
 AnyFolder Drivers = {
   
@@ -130,50 +127,50 @@ AnyFolder Drivers = {
 //   Reaction.Type = {Off};  
 //
 ////  };
-//  AnyKinEqInterPolDriver posturalLateralSpline = 
-//  {
-//    //MeasureOrganizer = {};
-//    //CType = ;
-//    //WeightFun = {};
-//    Type =Bspline;
-//    BsplineOrder = 4;
-//    T = (360/Main.WheelParameters.Omega)*{0/360,90/360,180/360, 270/360, 360/360};
-//    Data= {{0.03721267, -0.308496, 0.26973, 0.2539363, 0.03721267}};
-//
-////    Data=  {{0.03719904, -0.2404201, 0.3155832, 0.3405723, 0.01152855}};
-//    //    Data = {{0, -0.3566374, 0.1411123, 0.2494234, 0.01110955}};
-////    opt2 -0.02623265
-////    Data = {{0, -15*pi/180, 0, 15*pi/180, 0}};
-//    //FileName = "";
-//    //FileErrorContinueOnOff = Off;
-//    AnyKinMeasureOrg &Ref2 =...HumanModel.Interface.Trunk.PelvisThoraxLateralBending;
-//    Reaction.Type = {Off};  
-//  };
-
-  AnyKinEqFourierDriver PostureDriverThoraxLateralBending = 
+  AnyKinEqInterPolDriver PostureDriverThoraxLateralBending = 
   {
     //MeasureOrganizer = {};
-    CType = Hard;
+    //CType = ;
     //WeightFun = {};
-    Type = CosSin;
-    Freq = Main.WinchParameters.Omega/360;
-    A = {{0,0,0}};
-    B = {{0,-0.2,0}};
-    AnyKinMeasureOrg &Ref1 =...HumanModel.Interface.Trunk.PelvisThoraxLateralBending;
+    Type =Bspline;
+    BsplineOrder = 4;
+    T = (360/Main.WinchParameters.Omega)*{0/360,90/360,180/360, 270/360, 360/360};
+    Data= {{0, -0.2, 0, 0.2, 0}};
+
+//    Data=  {{0.03719904, -0.2404201, 0.3155832, 0.3405723, 0.01152855}};
+    //    Data = {{0, -0.3566374, 0.1411123, 0.2494234, 0.01110955}};
+//    opt2 -0.02623265
+//    Data = {{0, -15*pi/180, 0, 15*pi/180, 0}};
+    //FileName = "";
+    //FileErrorContinueOnOff = Off;
+    AnyKinMeasureOrg &Ref2 =...HumanModel.Interface.Trunk.PelvisThoraxLateralBending;
     Reaction.Type = {Off};  
-  };  
+  };
+
+//  AnyKinEqFourierDriver PostureDriverThoraxLateralBending = 
+//  {
+//    //MeasureOrganizer = {};
+//    CType = Hard;
+//    //WeightFun = {};
+//    Type = CosSin;
+//    Freq = Main.WinchParameters.Omega/360;
+//    A = {{0,0,0}};
+//    B = {{0,-0.2,0}};
+//    AnyKinMeasureOrg &Ref1 =...HumanModel.Interface.Trunk.PelvisThoraxLateralBending;
+//    Reaction.Type = {Off};  
+//  };  
   
   
-//  AnyKinEqInterPolDriver posturalExtFlexSpline = 
+//  AnyKinEqInterPolDriver PostureDriverThoraxExtension = 
 //  {
 //    //MeasureOrganizer = {};
 //    //CType = ;
 //    //WeightFun = {};
 //    Type =Bspline;
 //    BsplineOrder = 4;
-//    T = (360/Main.WheelParameters.Omega)*{0/360,90/360,180/360, 270/360, 360/360};
+//    T = (360/Main.WinchParameters.Omega)*{0/360,90/360,180/360, 270/360, 360/360};
 //    //Data={{-0.6231098, -0.2801242, -0.03619558, -0.3886652, -0.6485702}};
-//    Data={{-0.4801242, -0.4801242, -0.4801242, -0.4801242, -0.4801242}};
+//    Data={{-.80, -.46, -.282, -.52, -.80}};
 //
 ////    Data= {{-0.5431447, -0.3189552, -0.001832769, -0.3161134, -0.5613037}};
 ////    Data = {{-30*pi/180, -15*pi/180, 0*pi/180, -15*pi/180,-30*pi/180}};
@@ -184,7 +181,6 @@ AnyFolder Drivers = {
 //    AnyKinMeasureOrg &Ref2 =...HumanModel.Interface.Trunk.PelvisThoraxExtension;
 //    Reaction.Type = {Off};  
 //  };
-  
 
 
   AnyKinEqFourierDriver PostureDriverThoraxExtension = 
@@ -194,7 +190,8 @@ AnyFolder Drivers = {
     //WeightFun = {};
     Type = CosSin;
     Freq = Main.WinchParameters.Omega/360;
-    A = {{-0.4801242,-0.2,0}};
+//    A = {{-0.4801242,-0.2,0}};
+    A = {{-0.6,-0.2,0}};
     B = {{0,0,0}};
     AnyKinMeasure &Ref1 = ...HumanModel.Interface.Trunk.PelvisThoraxExtension;
     Reaction.Type = {Off};  
@@ -267,27 +264,29 @@ AnyFolder Drivers = {
     Reaction.Type={Off};
   };
 
-  AnyKinEqInterPolDriver ElbowLeft = 
-  {
-    //MeasureOrganizer = {};
-    //CType = ;
-    //WeightFun = {};
-    Type =Bspline;
-    BsplineOrder = 4;
-    T = (360/Main.WinchParameters.Omega)*{0/360,100/360,140/360, 160/360, 180/360, 200/360, 220/360, 360/360 };
-    Data={{-0.5235988, -0.1545362, 0.1197311, 0.1139721, -0.02618572, -0.1410608, -0.2252185, -0.5987893}};
-//    Data=  {{-0.5235988, -0.2530007, 0.1240638, 0.1572748, 0.01304429, -0.091999, -0.2018952, -0.5643959}};
-//    Data = {{-0.5235988, -0.2907301, 0.03691536, 0.2719966, 0.146837, -0.1457645, -0.1641803, -0.526681}};
-//  Opt1   Data = {{-0.5235988, -0.4315319, -0.137545, 0.1744783, 0.003306629, -0.1745329, -0.1745329, -0.5235988}};
-    //FileName = "";
-    //FileErrorContinueOnOff = Off;
-    AnyKinMeasureOrg &Elbow =...HumanModel.Interface.Left.ElbowPronation;
-    Reaction.Type={Off};
-  };
-  
-  
 
+//    AnyKinEqInterPolDriver RightWristAbduction = 
+//  {
+//    //MeasureOrganizer = {};
+//    //CType = ;
+//    //WeightFun = {};
+//    Type =Bspline;
+//    BsplineOrder = 4;
+//    T =  {0, .28, .57, .85, 1.14, 1.42, 1.7, 2};
+//    Data={{-9.7100e-002,
+//4.1728e-002,
+//-1.8655e-001,
+//-5.0567e-001,
+//-4.5894e-001,
+//-5.1402e-001,
+//-2.3449e-001,
+//-4.7342e-002}};
+//
+//    AnyKinMeasureOrg &RWristAbduction =...HumanModel.Interface.Right.WristAbduction;
+//    Reaction.Type={Off};
+//  };
   
+ 
   //Glenohumeral joint driver
   //  AnyKinEqSimpleDriver GHDriverRight={
   //     AnyKinMeasureOrg &ref1 =...HumanModel.Interface.Right.GlenohumeralAbduction;
@@ -351,8 +350,47 @@ AnyFolder Drivers = {
     Reaction.Type={Off};
   };  
   
+    AnyKinEqInterPolDriver ElbowLeft = 
+  {
+    //MeasureOrganizer = {};
+    //CType = ;
+    //WeightFun = {};
+    Type =Bspline;
+    BsplineOrder = 4;
+    T = (360/Main.WinchParameters.Omega)*{0/360,100/360,140/360, 160/360, 180/360, 200/360, 220/360, 360/360 };
+    Data={{-0.5235988, -0.1545362, 0.1197311, 0.1139721, -0.02618572, -0.1410608, -0.2252185, -0.5987893}};
+//    Data=  {{-0.5235988, -0.2530007, 0.1240638, 0.1572748, 0.01304429, -0.091999, -0.2018952, -0.5643959}};
+//    Data = {{-0.5235988, -0.2907301, 0.03691536, 0.2719966, 0.146837, -0.1457645, -0.1641803, -0.526681}};
+//  Opt1   Data = {{-0.5235988, -0.4315319, -0.137545, 0.1744783, 0.003306629, -0.1745329, -0.1745329, -0.5235988}};
+    //FileName = "";
+    //FileErrorContinueOnOff = Off;
+    AnyKinMeasureOrg &Elbow =...HumanModel.Interface.Left.ElbowPronation;
+    Reaction.Type={Off};
+  };
+  
+//    AnyKinEqInterPolDriver LeftWristAbduction = 
+//  {
+//    //MeasureOrganizer = {};
+//    //CType = ;
+//    //WeightFun = {};
+//    Type =Bspline;
+//    BsplineOrder = 4;
+//    T =  {0, .28, .57, .85, 1.14, 1.42, 1.7, 2};
+//    Data={{ 1.9887e-001,
+//5.1152e-002,
+//-1.4361e-001,
+//-6.2589e-002,
+//7.3129e-002,
+//2.5409e-001,
+//3.7697e-001,
+//2.4431e-001}};
+//
+//    AnyKinMeasureOrg &LWristAbduction =...HumanModel.Interface.Left.WristAbduction;
+//    Reaction.Type={Off};
+//  };
   
   
+
 //  
 //  //Elbow pronation driver 
 //  AnyKinEqSimpleDriver ElbowPSDriverLeft={
@@ -407,7 +445,8 @@ AnyFolder Joints = {
     };
     
     AnyRefFrame &Palm = Main.Model.HumanModel.Right.ShoulderArm.Seg.Hand.HandRef.HandleContact;
-    AnyRefFrame &Rim = Main.Model.EnvironmentModel.WhinchHandle.Handle;
+    AnyRefFrame &Rim = Main.Model.EnvironmentModel.WhinchHandle.Handle2;
+
   };
   
  // Left hand joint definition
@@ -421,16 +460,16 @@ AnyFolder Joints = {
       AnyRefNode HandleContact = {
         sRel = {0.02,-0.060,-0.005};
         ARel = RotMat(-pi/2,x);
-        AnyDrawRefFrame DrwRef = {
-       ScaleXYZ={0.05,0.05,0.05};
-       RGB ={0,1,0};Visible = On;
-     };
+//        AnyDrawRefFrame DrwRef = {
+//       ScaleXYZ={0.05,0.05,0.05};
+//       RGB ={0,1,0};Visible = On;
+//     };
 
       };
     };
     
     AnyRefFrame &Palm = Main.Model.HumanModel.Left.ShoulderArm.Seg.Hand.HandRef.HandleContact ;
-    AnyRefFrame &Rim = Main.Model.EnvironmentModel.WhinchHandle.Handle2;
+    AnyRefFrame &Rim =Main.Model.EnvironmentModel.WhinchHandle.Handle;
   };  
 //  AnySphericalJoint HandHandle = {
 //    AnySeg &Palm = Main.Model.HumanModel.Right.ShoulderArm.Seg.Glove;

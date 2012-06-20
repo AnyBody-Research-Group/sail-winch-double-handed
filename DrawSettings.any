@@ -26,7 +26,17 @@ AnyVec3 AnyBodyGrey = {153/256,153/256,153/256};    //AnyBody standard grey
 //    AnyVar Opacity =1.0;
 //  }; 
 
-AnyFolder Muscle ={ 
+//AnyFolder Muscle ={ 
+//    AnyVec3 RGB = .Colors.AnyBodyRed;
+//    AnySwitch Visible =On;
+//    AnySwitch DrawScaleOnOff =Off;
+//    AnyVar Bulging = 4.0;
+//    AnyVar ColorScale =1.0;
+//    AnyVec3 RGBColorScale = {0.557031, 0.185156, 0.185156};
+//    AnyVar MaxStress = 600000.000000; //N/m^2 //This number is for graphics only!
+//    AnyVar Opacity =1.0;
+//  };   
+  AnyFolder Muscle ={ 
     AnyVec3 RGB = .Colors.AnyBodyRed;
     AnySwitch Visible =On;
     AnySwitch DrawScaleOnOff =Off;
@@ -35,8 +45,8 @@ AnyFolder Muscle ={
     AnyVec3 RGBColorScale = {0.557031, 0.185156, 0.185156};
     AnyVar MaxStress = 600000.000000; //N/m^2 //This number is for graphics only!
     AnyVar Opacity =1.0;
-  };   
-  
+  };
+
   
     AnyFolder BonesOpacity ={
     

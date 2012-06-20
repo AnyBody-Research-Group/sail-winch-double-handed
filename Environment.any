@@ -18,7 +18,7 @@ AnyFolder EnvironmentModel = {
     // The hub of the Whinch
     AnyRefNode Hub = {
       sRel = Main.WinchParameters.Hub;
-      AnyDrawRefFrame  Drw={ScaleXYZ={0.05,0.05,0.05};};
+//      AnyDrawRefFrame  Drw={ScaleXYZ={0.05,0.05,0.05};};
       AnyRefNode WinchNode = {
         ARel =RotMat(-pi/2,x);
         AnyDrawSurf HarkenWinchTop = 
@@ -53,10 +53,10 @@ AnyFolder EnvironmentModel = {
     AnyRefNode Bottom={sRel={0.0,-0.03,0};};
     AnyRefNode Handle = {
       sRel = {Main.WinchParameters.Rad, 0.05, 0};
-      AnyDrawRefFrame DrwRef = {
-       ScaleXYZ={0.05,0.05,0.05};
-       RGB ={1,0,0};Visible = On;
-     };
+//      AnyDrawRefFrame DrwRef = {
+//       ScaleXYZ={0.05,0.05,0.05};
+//       RGB ={1,0,0};Visible = On;
+//     };
 
     };
     AnyRefNode Handle2 = {
@@ -135,11 +135,12 @@ AnyFolder EnvironmentModel = {
 
   // Moment affecting the wheels and caried by the muscles
   AnyForce Moment = {
-    AnyVar WhinchSpeedRatio = abs(Main.Model.EnvironmentModel.WhinchHandleJoint.Vel[0])/(Main.WinchParameters.Omega*pi/180);    
-    AnyVar Moment = Main.WinchParameters.M - 0.05*Main.WinchParameters.M*(1-WhinchSpeedRatio );
+//    AnyVar WhinchSpeedRatio = abs(Main.Model.EnvironmentModel.WhinchHandleJoint.Vel[0])/(Main.WinchParameters.Omega*pi/180);    
+    AnyVar Moment = Main.WinchParameters.M;
     
     AnyRevoluteJoint &Joint = .WhinchHandleJoint;
-    F = { iffun(ltfun(0.04, WhinchSpeedRatio), Moment, 0.00) };
+        F = { Moment };
+//    F = { iffun(ltfun(0.04, WhinchSpeedRatio), Moment, 0.00) };
   };
   
   

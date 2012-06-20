@@ -12,10 +12,10 @@
 
 // Trunk with neck: 1 included, 0 not included
 // *********************************
-#define TRUNK_NECK 0
+#define TRUNK_NECK 10
 // This is just the bones,
 // Choose one of the following options to add muscles
-#define TRUNK_NECK_SIMPLE_MUSCLES 0
+#define TRUNK_NECK_SIMPLE_MUSCLES 1
 #define TRUNK_NECK_SIMPLE_MUSCLES_ONLY_ON_NECK 0
 // Additional stiffness in the lumbar joints can be added.
 #define TRUNK_NECK_DISC_STIFFNESS_NORMAL 0

@@ -1,0 +1,52 @@
+     AnyVar slackl=90*pi/180;
+     
+     AnyDesVar ElbowPronR0 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][0];
+      Min = 0 -(.slackl);
+      Max = 0 +(.slackl);
+    };
+AnyDesVar ElbowPronR1 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][1];
+      Min = 0 -(.slackl);
+      Max = 0 +(.slackl);
+    };
+    AnyDesVar ElbowPronR2 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][2];
+      Min = 0 -.slackl;
+      Max = 0 +(.slackl);
+    };
+    AnyDesVar ElbowPronR3 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][3];
+      Min = 0 -.slackl;
+      Max = 0 +(.slackl);
+    };
+    AnyDesVar ElbowPronR4 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][4];
+      Min = 0 -.slackl;
+      Max = 0 +(.slackl);
+    };
+    AnyDesVar ElbowPronR5 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][5];
+      Min = 0 -.slackl;
+      Max = 0 +(.slackl);
+    };
+    AnyDesVar ElbowPronR6 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][6];
+      Min = 0 -.slackl;
+      Max = 0 +(.slackl);
+    };
+    AnyDesVar ElbowPronR7 = 
+    {
+      Val = Main.Model.ModelEnvironmentConnection.Drivers.ElbowLeft.Data[0][7];
+      Min = 0 -.slackl;
+      Max = 0 +(.slackl);
+      
+    };
+
